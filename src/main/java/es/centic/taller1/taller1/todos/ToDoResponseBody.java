@@ -26,7 +26,6 @@ public class ToDoResponseBody {
     public List<UserBodyResponse> getUsers() {
         return users;
     }
-
 }
 
 

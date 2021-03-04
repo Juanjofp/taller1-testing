@@ -1,5 +1,6 @@
 package es.centic.taller1.taller1.todos;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,7 +49,9 @@ public class ToDo {
     }
 
     public void addUsers(List<User> users) {
-        this.users.addAll(users);
+        HashSet<User> filterDuplicated = new HashSet<>(this.users);
+        filterDuplicated.addAll(users);
+        this.users = List.copyOf(filterDuplicated);
     }
 
     public List<User> getUsers() {
