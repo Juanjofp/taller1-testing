@@ -139,6 +139,22 @@ public class ToDoControllerIntegrationTests {
         );
     }
 
+    // HU: Quiero crear Tareas con descripción por defecto
+    @Test
+    void createNewToDoWithoutDescriptionInAList() throws Exception {
+        // Arrange
+        ToDoList list = todoListRepository.save(new ToDoList("First List"));
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                                                    .post("/lists/{idList}/todos", list.getId().toString())
+                                                    .contentType(MediaType.APPLICATION_JSON_VALUE);
+        // Act
+        mockMvc.perform(request)
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isMap())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.todoId").isNumber())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("Add description"));
+    }
+
     
 }
 
