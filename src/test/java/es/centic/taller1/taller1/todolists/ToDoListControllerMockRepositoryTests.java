@@ -23,6 +23,8 @@ public class ToDoListControllerMockRepositoryTests {
     @MockBean
     private ToDoListRepository toDoListRepository;
 
+    // HU: Quiero poder crear listas con un título
+
     @Test
     void controllerReturn503WhenRepositoryFailsSavingANewToDoList() throws Exception{
         // Arrange
