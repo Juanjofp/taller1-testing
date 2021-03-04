@@ -45,7 +45,9 @@ class ToDoLisControllertIntegrationTests {
         // Arrange
         JSONObject body = new JSONObject();
         body.put("title", "My First List");
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/lists").content(body.toString()).header("content-type", "application/json");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/lists")
+                                                    .content(body.toString())
+                                                    .header("content-type", "application/json");
 
         // Act
         mockMvc.perform(request)
@@ -60,7 +62,23 @@ class ToDoLisControllertIntegrationTests {
     void createANewListWithoutTitle() throws Exception {
         // Arrange
         JSONObject body = new JSONObject();
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/lists").content(body.toString()).header("content-type", "application/json");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/lists")
+                                                    .content(body.toString())
+                                                    .header("content-type", "application/json");
+
+        // Act
+        mockMvc.perform(request)
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getMessage()).contains("400 BAD_REQUEST \"Title is required\"")
+            );
+    }
+
+    @Test
+    void createANewListWithoutBody() throws Exception {
+        // Arrange
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/lists").header("content-type", "application/json");
 
         // Act
         mockMvc.perform(request)

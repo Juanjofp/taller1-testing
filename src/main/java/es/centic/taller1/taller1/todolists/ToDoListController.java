@@ -22,9 +22,9 @@ public class ToDoListController {
     }
 
     @PostMapping(value="/lists", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ToDoListResponseBody createNewList(@RequestBody ToDoListRequestBody body) {
+    public ToDoListResponseBody createNewList(@RequestBody(required = false) ToDoListRequestBody body) {
 
-        if (body.getTitle() == null) {
+        if (body == null || body.getTitle() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title is required", null);
         }
         ToDoList toDoList = toDoListService.createToDoList(body.getTitle());
