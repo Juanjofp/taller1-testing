@@ -44,6 +44,9 @@ public class UserController {
             User newUser = userService.createNewUser(username, name);
             return new UserBodyResponse(newUser);
         }
+        catch(UserExistsException userExistsException) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, userExistsException.getMessage(), null);
+        }
         catch(AddressException | NullPointerException badEmailException) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username " + username, null);
         }
