@@ -124,5 +124,26 @@ public class UserControllerIntegrationTests {
         Optional<User> savedUser = userRepository.findById("null");
         assertThat(savedUser.isPresent()).isEqualTo(false);
     }
+
+        // Al crear un usuario con el mismo username modifica el name, queremos que nos avise de que el usuario existe
+
+        @Test
+        void createDuplicateUser() throws Exception {
+            // Arrange
+            User userInApp = new User("juanjo@centic", "Juanjo");
+            userRepository.save(userInApp);
+            JSONObject body = new JSONObject("{\"username\": \"juanjo@centic\", \"name\": \"Juanjo Franco\"}");
+            RequestBuilder request = MockMvcRequestBuilders.post("/users")
+                .content(body.toString())
+                .header("content-type", "application/json");
+    
+            // Act
+            mockMvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andExpect(result -> assertThat(result.getResolvedException().getMessage()).contains("409 CONFLICT \"User juanjo@centic already exists\""));
+            Optional<User> savedUser = userRepository.findById("juanjo@centic");
+            assertThat(savedUser.get()).isEqualTo(userInApp);
+        }
 }
 
