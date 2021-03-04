@@ -41,4 +41,19 @@ public class ToDoListControllerMockRepositoryTests {
                 result -> assertThat(result.getResolvedException().getMessage()).contains("Service unavailable, check later")
             );
     }
+
+    @Test
+    void controllerReturn503WhenRepositoryFailsRetrievingList() throws Exception{
+        // Arrange
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/lists").header("content-type", "application/json");
+        given(toDoListRepository.findAll()).willThrow(new RuntimeException());
+
+        // Act
+        mockMvc.perform(request)
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isServiceUnavailable())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getMessage()).contains("Service unavailable, check later")
+            );
+    }
 }

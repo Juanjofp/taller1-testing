@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,8 +20,14 @@ public class ToDoListController {
     private ToDoListService toDoListService;
     
     @GetMapping(value="/lists", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String showAllLists() {
-        return "[]";
+    public ListOfTodoListResponseBody showAllLists() {
+        try {
+            List<ToDoList> toDoListCollection = toDoListService.findAllLists();
+            return new ListOfTodoListResponseBody(toDoListCollection);
+        }
+        catch(Exception exceptions) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Service unavailable, check later", null);
+        }
     }
 
     @PostMapping(value="/lists", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
