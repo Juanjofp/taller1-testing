@@ -50,5 +50,19 @@ public class ToDoController {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Service unavailable, check later", null);
         }
     }
+
+    @PostMapping(value = "/lists/{listId}/todos/{todoId}/users", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ToDoResponseBody addUsersInToDo(@PathVariable long listId, @PathVariable long todoId, @RequestBody List<String> users) {
+        try {
+            ToDo updatedToDo = toDoService.addUsers(todoId, users);
+            return new ToDoResponseBody(updatedToDo);
+        }
+        catch(ToDoNotFoundException tDNFException) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, tDNFException.getMessage(), null);
+        }
+        catch(Exception exceptions) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Service unavailable, check later", null);
+        }
+    }
 }
 

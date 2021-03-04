@@ -1,14 +1,19 @@
 package es.centic.taller1.taller1.todos;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import es.centic.taller1.taller1.todolists.ToDoList;
+import es.centic.taller1.taller1.users.User;
 
 @Entity
 public class ToDo {
@@ -19,6 +24,9 @@ public class ToDo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private ToDoList list;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<User> users = new ArrayList<>();
 
     protected ToDo() {}
 
@@ -37,6 +45,14 @@ public class ToDo {
 
     public String getDescription() {
         return description;
+    }
+
+    public void addUsers(List<User> users) {
+        this.users.addAll(users);
+    }
+
+    public List<User> getUsers() {
+        return users;
     }
 
     @Override

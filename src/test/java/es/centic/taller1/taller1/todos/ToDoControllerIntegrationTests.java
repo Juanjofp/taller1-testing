@@ -11,8 +11,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import es.centic.taller1.taller1.todolists.ToDoList;
 import es.centic.taller1.taller1.todolists.ToDoListRepository;
+import es.centic.taller1.taller1.users.User;
+import es.centic.taller1.taller1.users.UserRepository;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.Matchers.*;
 
 import java.util.ArrayList;
 
@@ -34,10 +37,14 @@ public class ToDoControllerIntegrationTests {
     @Autowired
     private ToDoListRepository todoListRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @BeforeEach
     void setUpTests() {
         todoRepository.deleteAll();
         todoListRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     // HU: Quiero poder crear Tareas en una lista existente
@@ -153,6 +160,64 @@ public class ToDoControllerIntegrationTests {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isMap())
             .andExpect(MockMvcResultMatchers.jsonPath("$.todoId").isNumber())
             .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("Add description"));
+    }
+
+
+    // HU: 
+
+    @Test
+    void AddTwoUserToAToDo() throws Exception {
+        // Arrange
+        ToDoList list = todoListRepository.save(new ToDoList("First List"));
+        ToDo todo = todoRepository.save(new ToDo(list, "First ToDo"));
+        User userOne = userRepository.save(new User("juanjo@centic", "Juanjo Franco"));
+        User userTwo = userRepository.save(new User("joaquin@centic", "Joaquin Lasheras"));
+        ArrayList<String> usersExpected = new ArrayList<>();
+        usersExpected.add(userOne.getUsername());
+        usersExpected.add(userTwo.getUsername());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                                                    .post(
+                                                        "/lists/{idList}/todos/{idTodo}/users",
+                                                        list.getId().toString(),
+                                                        Long.toString(todo.getId())
+                                                    )
+                                                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                    .content(
+                                                        String.format(
+                                                            "[\"%s\", \"%s\"]",
+                                                            userOne.getUsername(),
+                                                            userTwo.getUsername()
+                                                        )
+                                                    );
+        // Act
+        mockMvc.perform(request)
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isMap())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.todoId").isNumber())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("First ToDo"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.users").isArray())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.users", hasSize(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.users[*].username", hasItems("joaquin@centic", "juanjo@centic")));
+    }
+
+    @Test
+    void fails404WhenNoToDoPresent() throws Exception {
+        // Arrange
+        User userOne = userRepository.save(new User("juanjo@centic", "Juanjo Franco"));
+        User userTwo = userRepository.save(new User("joaquin@centic", "Joaquin Lasheras"));
+        ArrayList<String> usersExpected = new ArrayList<>();
+        usersExpected.add(userOne.getUsername());
+        usersExpected.add(userTwo.getUsername());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                                                    .post("/lists/1/todos/1/users")
+                                                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                    .content(String.format("[\"%s\", \"%s\"]", userOne.getUsername(), userTwo.getUsername()));
+        // Act
+        mockMvc.perform(request)
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getMessage()).contains("ToDo with Id 1 not found")
+            );
     }
 
     

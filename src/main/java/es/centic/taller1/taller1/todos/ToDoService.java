@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import es.centic.taller1.taller1.todolists.ToDoList;
 import es.centic.taller1.taller1.todolists.ToDoListRepository;
+import es.centic.taller1.taller1.users.User;
+import es.centic.taller1.taller1.users.UserRepository;
 
 
 @Service
@@ -18,6 +20,9 @@ public class ToDoService {
 
     @Autowired
     private ToDoListRepository todoListRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private ToDo createToDo(ToDoList list, String description) {
         return new ToDo(list, description);
@@ -38,5 +43,17 @@ public class ToDoService {
             throw new ToDoListNotFoundException(listId);
         }
 		return todoRepository.findByList(list.get());
+	}
+
+	public ToDo addUsers(long todoId, List<String> users) throws ToDoNotFoundException {
+        List<User> usersFound = userRepository.findAllById(users);
+        Optional<ToDo> todoFound = todoRepository.findById(todoId);
+        if(!todoFound.isPresent()) {
+            throw new ToDoNotFoundException(todoId);
+        }
+        ToDo todo = todoFound.get();
+        todo.addUsers(usersFound);
+        todoRepository.save(todo);
+        return todo;
 	}
 }
