@@ -51,6 +51,7 @@ public class ToDo {
     public void addUsers(List<User> users) {
         HashSet<User> filterDuplicated = new HashSet<>(this.users);
         filterDuplicated.addAll(users);
+        // Set of data
         this.users = List.copyOf(filterDuplicated);
     }
 
