@@ -34,10 +34,10 @@ public class ToDoService {
             throw new ToDoListNotFoundException(listId);
         }
         ToDoList list = listFound.get();
-        if(list.getWip() >= todoRepository.countByList(list)) {
-            throw new ToDoMaxWIPReachedException(list);
+        if(list.getWip() == 0 || list.getWip() < todoRepository.countByList(list)) {
+            return todoRepository.save(createToDo(list, description));
         }
-        return todoRepository.save(createToDo(list, description));
+        throw new ToDoMaxWIPReachedException(list);
         
     }
 
