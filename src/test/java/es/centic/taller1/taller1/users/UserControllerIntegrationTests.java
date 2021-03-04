@@ -1,6 +1,8 @@
 package es.centic.taller1.taller1.users;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +13,14 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 
 import static org.assertj.core.api.Assertions.*;
+
+import java.io.IOException;
 import java.util.Optional;
 
 @SpringBootTest
@@ -24,9 +32,26 @@ public class UserControllerIntegrationTests {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AvatarService avatarService;
+    private static MockWebServer mockApiServer;
+
+    @BeforeAll
+    static void setupTests() throws IOException {
+        mockApiServer = new MockWebServer();
+        mockApiServer.start();
+    }
+
+    @AfterAll
+    static void clearTests() throws IOException {
+        mockApiServer.shutdown();
+    }
+
     @BeforeEach
     void initApiServer() {
         userRepository.deleteAll();
+        String apiServerUrl = String.format("http://localhost:%s", mockApiServer.getPort());
+        avatarService.setWebclient(WebClient.create(apiServerUrl));
     }
 
     // HU: Quiero ver los usuarios de la aplicación
@@ -73,7 +98,7 @@ public class UserControllerIntegrationTests {
     @Test
     void createNewUserWithEmail() throws Exception {
         // Arrange
-        JSONObject body = new JSONObject("{\"username\": \"juanjo@centic\", \"name\": \"Juanjo\"}");
+        JSONObject body = new JSONObject("{\"username\": \"juanjo@centic\", \"name\": \"Juanjo\", \"avatar\": \"http://miavatarsupermolor.com\"}");
         RequestBuilder request = MockMvcRequestBuilders.post("/users")
             .content(body.toString())
             .header("content-type", "application/json");
@@ -172,13 +197,20 @@ public class UserControllerIntegrationTests {
     @Test
     void createNewUserWithEmailAndWithoutAvatar() throws Exception {
         // Arrange
+        String avatarExpected = "http://avatar.io/myavatar";
+        mockApiServer.enqueue(
+            new MockResponse()
+                .setBody(String.format("{\"image\":\"%s\"}", avatarExpected))
+                .addHeader("Content-Type", "application/json")
+        );
+
         JSONObject body = new JSONObject("{\"username\": \"juanjo@centic\", \"name\": \"Juanjo\"}");
         JSONObject expectedBody = new JSONObject(body.toString());
-        expectedBody.put("avatar", "https://avatar.io/default");
+        expectedBody.put("avatar", "http://avatar.io/myavatar");
         RequestBuilder request = MockMvcRequestBuilders.post("/users")
             .content(body.toString())
             .header("content-type", "application/json");
-        User expectedUser = new User("juanjo@centic", "Juanjo", "https://avatar.io/default");
+        User expectedUser = new User("juanjo@centic", "Juanjo", "http://avatar.io/myavatar");
 
         // Act
         mockMvc.perform(request)
