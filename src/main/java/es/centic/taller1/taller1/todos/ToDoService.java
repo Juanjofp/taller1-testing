@@ -1,5 +1,6 @@
 package es.centic.taller1.taller1.todos;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,13 @@ public class ToDoService {
         }
         ToDoList list = listFound.get();
         return todoRepository.save(createToDo(list, description));
-        
     }
+
+	public List<ToDo> showAll(long listId) throws ToDoListNotFoundException {
+        Optional<ToDoList> list = todoListRepository.findById(listId);
+        if(!list.isPresent()) {
+            throw new ToDoListNotFoundException(listId);
+        }
+		return todoRepository.findByList(list.get());
+	}
 }

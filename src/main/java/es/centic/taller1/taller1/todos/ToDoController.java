@@ -1,5 +1,7 @@
 package es.centic.taller1.taller1.todos;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,8 +23,17 @@ public class ToDoController {
     }
 
     @GetMapping(value = "/lists/{listId}/todos", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String showToDos(@PathVariable(value="listId") long listId) {
-        return "[]";
+    public ListOfToDosResponseBody showToDos(@PathVariable(value="listId") long listId) {
+        try {
+            List<ToDo> todos = toDoService.showAll(listId);
+            return new ListOfToDosResponseBody(todos);
+        }
+        catch(ToDoListNotFoundException tDNFException) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, tDNFException.getMessage(), null);
+        }
+        catch(Exception exceptions) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Service unavailable, check later", null);
+        }
     }
 
     @PostMapping(value = "/lists/{listId}/todos", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

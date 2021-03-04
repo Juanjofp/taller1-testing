@@ -14,6 +14,10 @@ import es.centic.taller1.taller1.todolists.ToDoListRepository;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.ArrayList;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,6 +85,60 @@ public class ToDoControllerIntegrationTests {
             result -> assertThat(result.getResolvedException().getMessage()).contains("List with Id 1 not found")
         );
     }
+
+
+
+    // HU: Quiero ver las tareas que tiene una lista 
+
+    @Test
+    void returnAnEmptyListIfNoToDoInTheList() throws Exception {
+        // Arrange
+        ToDoList list = todoListRepository.save(new ToDoList("First List"));
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/lists/{idList}/todos", list.getId().toString())
+                                                    .contentType(MediaType.APPLICATION_JSON_VALUE);
+        // Act
+        mockMvc.perform(request)
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.todos").isArray())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.todos").isEmpty());
+    }
+
+    @Test
+    void returnAllToDosInTheList() throws Exception {
+        // Arrange
+        ToDoList list = todoListRepository.save(new ToDoList("First List"));
+        ArrayList<ToDo> todos = new ArrayList<>();
+        todos.add(new ToDo(list, "First ToDo"));
+        todos.add(new ToDo(list, "Second ToDo"));
+        todoRepository.saveAll(todos);
+        ListOfToDosResponseBody expectedResponse = new ListOfToDosResponseBody(todos);
+        ObjectMapper mapper = new ObjectMapper();
+        String expectedBody = mapper.writeValueAsString(expectedResponse);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/lists/{idList}/todos", list.getId().toString())
+                                                    .contentType(MediaType.APPLICATION_JSON_VALUE);
+        // Act
+        mockMvc.perform(request)
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.todos").isArray())
+            .andExpect(MockMvcResultMatchers.content().json(expectedBody));
+    }
+
+    @Test
+    void fails404WhenListIsNotPresentListing() throws Exception {
+        // Arrange
+        JSONObject body = new JSONObject();
+        body.put("description", "First Todo");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/lists/{idList}/todos", "1")
+                                                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                    .content(body.toString());
+        // Act
+        mockMvc.perform(request)
+        .andExpect(MockMvcResultMatchers.status().isNotFound())
+        .andExpect(
+            result -> assertThat(result.getResolvedException().getMessage()).contains("List with Id 1 not found")
+        );
+    }
+
     
 }
 

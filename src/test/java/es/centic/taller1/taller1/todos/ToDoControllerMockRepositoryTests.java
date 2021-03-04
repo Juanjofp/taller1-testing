@@ -34,6 +34,8 @@ public class ToDoControllerMockRepositoryTests {
     @MockBean
     private ToDoRepository todoRepository;
 
+    // HU: Quiero poder crear Tareas en una lista existente
+    
     @Test
     void controllerReturn503WhenRepositoryFailsSavingANewToDo() throws Exception {
         // Arrange
@@ -55,5 +57,43 @@ public class ToDoControllerMockRepositoryTests {
             .andExpect(
                 result -> assertThat(result.getResolvedException().getMessage()).contains("Service unavailable, check later")
             );
-    }    
+    }
+    
+    // HU: Quiero ver las tareas que tiene una lista 
+
+    @Test
+    void controllerReturn503WhenRepositoryFailsRetriveToDos() throws Exception {
+        // Arrange
+        ToDoList list = new ToDoList("First List");
+        list.setId(1L);
+        Optional<ToDoList> optList = Optional.of(list);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/lists/{idList}/todos", list.getId().toString());
+        given(todoListRepository.findById(list.getId())).willReturn(optList);
+        given(todoRepository.findByList(list)).willThrow(new RuntimeException("Service unavailable, check later"));
+
+        // Act
+        mockMvc.perform(request)
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isServiceUnavailable())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getMessage()).contains("Service unavailable, check later")
+            );
+    }
+
+    @Test
+    void controllerReturn503WhenRepositoryFailsRetriveList() throws Exception {
+        // Arrange
+        ToDoList list = new ToDoList("First List");
+        list.setId(1L);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/lists/{idList}/todos", list.getId().toString());
+        given(todoListRepository.findById(list.getId())).willThrow(new RuntimeException("Service unavailable, check later"));
+
+        // Act
+        mockMvc.perform(request)
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isServiceUnavailable())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getMessage()).contains("Service unavailable, check later")
+            );
+    }
 }
