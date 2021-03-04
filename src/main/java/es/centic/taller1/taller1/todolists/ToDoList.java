@@ -14,11 +14,18 @@ public class ToDoList {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String title;
+    private int wip;
 
     protected ToDoList() {}
 
     public ToDoList(String title) {
         this.title = title;
+        this.wip = 0;
+    }
+
+    public ToDoList(String title, int wip) {
+        this.title = title;
+        this.wip = wip;
     }
 
     public Long getId() {
@@ -35,9 +42,16 @@ public class ToDoList {
         this.title = title;
     }
 
+    public int getWip() {
+        return wip;
+    }
+    public void setWip(int wip) {
+        this.wip = wip;
+    }
+
     @Override
     public String toString() {
-        return String.format("ToDoList[%d %s]", id, title);
+        return String.format("ToDoList[%d %s %d]", id, title, wip);
     }
 
     @Override
@@ -56,4 +70,3 @@ public class ToDoList {
         return Objects.hash(this.id);
     }
 }
-

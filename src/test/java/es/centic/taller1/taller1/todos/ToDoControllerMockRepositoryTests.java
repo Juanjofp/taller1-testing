@@ -96,4 +96,23 @@ public class ToDoControllerMockRepositoryTests {
                 result -> assertThat(result.getResolvedException().getMessage()).contains("Service unavailable, check later")
             );
     }
+
+    // HU: Quiero poder asociar usuarios a tareas
+
+    @Test
+    void controllerReturn503WhenRepositoryFailsAddingUser() throws Exception {
+        // Arrange
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/lists/1/todos/1/users")
+                                                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                        .content("[\"juanjo@centic\"]");
+        given(todoRepository.findById(1L)).willThrow(new RuntimeException("Service unavailable, check later"));
+
+        // Act
+        mockMvc.perform(request)
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isServiceUnavailable())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getMessage()).contains("Service unavailable, check later")
+            );
+    }
 }

@@ -11,8 +11,9 @@ public class ToDoListService {
     @Autowired
     private ToDoListRepository toDoListRepository;
 
-    public ToDoList createToDoList(String title) {
-        return toDoListRepository.save(new ToDoList(title));
+    public ToDoList createToDoList(String title, int wip) {
+        if(wip <= 0) wip = 0;
+        return toDoListRepository.save(new ToDoList(title, wip));
     }
 
     public List<ToDoList> findAllLists() {

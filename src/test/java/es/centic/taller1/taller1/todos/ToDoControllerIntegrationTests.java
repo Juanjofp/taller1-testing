@@ -163,7 +163,7 @@ public class ToDoControllerIntegrationTests {
     }
 
 
-    // HU: 
+    // HU: Quiero poder asociar usuarios a tareas
 
     @Test
     void AddTwoUserToAToDo() throws Exception {
@@ -220,6 +220,21 @@ public class ToDoControllerIntegrationTests {
             );
     }
 
-    
+    @Test
+    void fails409WhenReachWIP() throws Exception {
+        // Arrange
+        ToDoList list = todoListRepository.save(new ToDoList("First List", 2));
+        JSONObject body = new JSONObject();
+        body.put("description", "Third Todo");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/lists/{idList}/todos", list.getId().toString())
+                                                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                    .content(body.toString());
+        // Act
+        mockMvc.perform(request)
+            .andExpect(MockMvcResultMatchers.status().isConflict())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getMessage()).contains("Max WIP(2) reached in ToDoList")
+            );
+    }    
 }
 

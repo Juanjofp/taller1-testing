@@ -31,12 +31,12 @@ public class ToDoListController {
     }
 
     @PostMapping(value="/lists", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ToDoListResponseBody createNewList(@RequestBody(required = false) ToDoListRequestBody body) {
+    public ToDoListResponseBody createNewList(@RequestBody ToDoListRequestBody body) {
         if (body == null || body.getTitle() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title is required", null);
         }
         try { 
-            ToDoList toDoList = toDoListService.createToDoList(body.getTitle());
+            ToDoList toDoList = toDoListService.createToDoList(body.getTitle(), body.getWip());
             return new ToDoListResponseBody(toDoList);
         }
         catch(Exception exceptions) {

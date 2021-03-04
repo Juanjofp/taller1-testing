@@ -28,13 +28,17 @@ public class ToDoService {
         return new ToDo(list, description);
     }
 
-    public ToDo addNewToDo(long listId, String description) throws ToDoListNotFoundException {
+    public ToDo addNewToDo(long listId, String description) throws ToDoListNotFoundException, ToDoMaxWIPReachedException {
         Optional<ToDoList> listFound = todoListRepository.findById(listId);
         if(!listFound.isPresent()) {
             throw new ToDoListNotFoundException(listId);
         }
         ToDoList list = listFound.get();
+        if(list.getWip() >= todoRepository.countByList(list)) {
+            throw new ToDoMaxWIPReachedException(list);
+        }
         return todoRepository.save(createToDo(list, description));
+        
     }
 
 	public List<ToDo> showAll(long listId) throws ToDoListNotFoundException {

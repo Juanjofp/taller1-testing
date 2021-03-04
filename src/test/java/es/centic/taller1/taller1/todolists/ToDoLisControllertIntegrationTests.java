@@ -135,4 +135,24 @@ class ToDoLisControllertIntegrationTests {
             .andExpect(MockMvcResultMatchers.content().json(expectedBody));
 
     }
+
+    @Test
+    void createANewListWithATitleAndWIP() throws Exception {
+        // Arrange
+        JSONObject body = new JSONObject();
+        body.put("title", "My First List");
+        body.put("wip", 3);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/lists").content(body.toString()).header("content-type", "application/json");
+
+        // Act
+        mockMvc.perform(request)
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isMap())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.listId").isNumber())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("My First List"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.wip").value("3"));
+        
+        assertThat(toDoListRepository.count()).isEqualTo(1);
+    }
 }

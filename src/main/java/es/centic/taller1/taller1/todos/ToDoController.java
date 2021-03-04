@@ -46,6 +46,9 @@ public class ToDoController {
         catch(ToDoListNotFoundException tDNFException) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, tDNFException.getMessage(), null);
         }
+        catch(ToDoMaxWIPReachedException tDMWRE) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, tDMWRE.getMessage(), null);
+        }
         catch(Exception exceptions) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Service unavailable, check later", null);
         }
