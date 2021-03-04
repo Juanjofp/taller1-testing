@@ -24,6 +24,7 @@ class ToDoLisControllertIntegrationTests {
     @Autowired
     private MockMvc mockMvc;
 
+    // HU: Quiero poder crear listas con un título
     @Test
     void checkToDoListController() {
         assertThat(toDoListController).isNotNull();
@@ -53,5 +54,20 @@ class ToDoLisControllertIntegrationTests {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isMap())
             .andExpect(MockMvcResultMatchers.jsonPath("$.listId").isNumber())
             .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("My First List"));
+    }
+
+    @Test
+    void createANewListWithoutTitle() throws Exception {
+        // Arrange
+        JSONObject body = new JSONObject();
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/lists").content(body.toString()).header("content-type", "application/json");
+
+        // Act
+        mockMvc.perform(request)
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getMessage()).contains("400 BAD_REQUEST \"Title is required\"")
+            );
     }
 }
