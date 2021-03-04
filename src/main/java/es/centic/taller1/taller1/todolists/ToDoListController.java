@@ -23,11 +23,15 @@ public class ToDoListController {
 
     @PostMapping(value="/lists", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ToDoListResponseBody createNewList(@RequestBody(required = false) ToDoListRequestBody body) {
-
-        if (body == null || body.getTitle() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title is required", null);
+        try { 
+            if (body == null || body.getTitle() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title is required", null);
+            }
+            ToDoList toDoList = toDoListService.createToDoList(body.getTitle());
+            return new ToDoListResponseBody(toDoList);
         }
-        ToDoList toDoList = toDoListService.createToDoList(body.getTitle());
-        return new ToDoListResponseBody(toDoList);
+        catch(Exception exceptions) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Service unavailable, check later", null);
+        }
     }
 }
