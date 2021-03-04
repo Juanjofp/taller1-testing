@@ -7,9 +7,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.assertj.core.api.Assertions.*;
+
+import org.json.JSONObject;
 
 
 @SpringBootTest
@@ -34,5 +37,21 @@ class ToDoLisControllertIntegrationTests {
         // Act
         mockMvc.perform(request)
             .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void createANewListWithATitle() throws Exception {
+        // Arrange
+        JSONObject body = new JSONObject();
+        body.put("title", "My First List");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/lists").content(body.toString()).header("content-type", "application/json");
+
+        // Act
+        mockMvc.perform(request)
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isMap())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.listId").isNumber())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("My First List"));
     }
 }
