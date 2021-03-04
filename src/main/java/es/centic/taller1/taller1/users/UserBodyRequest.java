@@ -3,12 +3,14 @@ package es.centic.taller1.taller1.users;
 public class UserBodyRequest {
     private String username;
     private String name;
+    private String avatar;
 
     protected UserBodyRequest() {}
 
-    public UserBodyRequest(String username, String name) {
+    public UserBodyRequest(String username, String name, String avatar) {
         this.username = username;
         this.name = name;
+        this.avatar = avatar;
     }
 
     public String getUsername() {
@@ -23,5 +25,12 @@ public class UserBodyRequest {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

@@ -54,9 +54,9 @@ public class UserControllerMockRepositoryTests {
         expectedUsers.put(new JSONObject("{\"username\": \"pedro@centic\", \"name\": \"Pedro\"}"));
         expectedJson.put("users", expectedUsers);
         ArrayList<User> usersMocked = new ArrayList<>();
-        usersMocked.add(new User("juanjo@centic", "Juanjo"));
-        usersMocked.add(new User("joaquin@centic", "Joaquin"));
-        usersMocked.add(new User("pedro@centic", "Pedro"));
+        usersMocked.add(new User("juanjo@centic", "Juanjo", "http://miavatarsupermolor.com"));
+        usersMocked.add(new User("joaquin@centic", "Joaquin", "http://miavatarsupermolor.com"));
+        usersMocked.add(new User("pedro@centic", "Pedro", "http://miavatarsupermolor.com"));
         given(userRepository.findAll()).willReturn(usersMocked);
 
 
@@ -91,7 +91,7 @@ public class UserControllerMockRepositoryTests {
         RequestBuilder request = MockMvcRequestBuilders.post("/users")
             .content(body.toString())
             .header("content-type", "application/json");
-        User expectedUser = new User("juanjo@centic", "Juanjo");
+        User expectedUser = new User("juanjo@centic", "Juanjo", "http://miavatarsupermolor.com");
         given(userRepository.save(expectedUser)).willReturn(expectedUser);
 
         // Act
@@ -111,7 +111,7 @@ public class UserControllerMockRepositoryTests {
         RequestBuilder request = MockMvcRequestBuilders.post("/users")
             .content(body.toString())
             .header("content-type", "application/json");
-        User expectedUser = new User("juanjo@centic", "Juanjo");
+        User expectedUser = new User("juanjo@centic", "Juanjo", "http://miavatarsupermolor.com");
         given(userRepository.save(expectedUser)).willThrow(IllegalArgumentException.class);
 
         // Act

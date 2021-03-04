@@ -35,9 +35,9 @@ public class UserControllerUnitTests {
     void showAListOfUsers() throws Exception {
         // Arrange
         ArrayList<User> usersMocked = new ArrayList<>();
-        usersMocked.add(new User("juanjo@centic", "Juanjo"));
-        usersMocked.add(new User("joaquin@centic", "Joaquin"));
-        usersMocked.add(new User("pedro@centic", "Pedro"));
+        usersMocked.add(new User("juanjo@centic", "Juanjo", "https://avatar.io/default"));
+        usersMocked.add(new User("joaquin@centic", "Joaquin", "https://avatar.io/default"));
+        usersMocked.add(new User("pedro@centic", "Pedro", "https://avatar.io/default"));
         given(mockUserService.findAllUsers()).willReturn(usersMocked);
 
 
@@ -71,8 +71,9 @@ public class UserControllerUnitTests {
         // Arrange
         String username = "juanjo@centic";
         String name = "Juanjo";
-        UserBodyRequest body = new UserBodyRequest(username, name);
-        given(mockUserService.createNewUser(username, name)).willReturn(new User(username, name));
+        String avatar = "https://avatar.io/default";
+        UserBodyRequest body = new UserBodyRequest(username, name, avatar);
+        given(mockUserService.createNewUser(username, name, avatar)).willReturn(new User(username, name, avatar));
 
         // Act
         UserBodyResponse response = controller.createNewUser(body);
@@ -87,8 +88,9 @@ public class UserControllerUnitTests {
         // Arrange
         String username = "juanjocentic";
         String name = "Juanjo";
-        UserBodyRequest body = new UserBodyRequest(username, name);
-        given(mockUserService.createNewUser(username, name)).willThrow(new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Invalid email " + username));
+        String avatar = "https://avatar.io/default";
+        UserBodyRequest body = new UserBodyRequest(username, name, avatar);
+        given(mockUserService.createNewUser(username, name, avatar)).willThrow(new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Invalid email " + username));
 
         // Act
         Exception expected = assertThrows(
@@ -106,8 +108,9 @@ public class UserControllerUnitTests {
         // Arrange
         String username = null;
         String name = "Juanjo";
-        UserBodyRequest body = new UserBodyRequest(username, name);
-        given(mockUserService.createNewUser(username, name)).willThrow(new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Invalid email " + username));
+        String avatar = "https://avatar.io/default";
+        UserBodyRequest body = new UserBodyRequest(username, name, avatar);
+        given(mockUserService.createNewUser(username, name, avatar)).willThrow(new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Invalid email " + username));
 
         // Act
         Exception expected = assertThrows(
@@ -125,8 +128,9 @@ public class UserControllerUnitTests {
         // Arrange
         String username = "juanjo@centic";
         String name = "Juanjo";
-        UserBodyRequest body = new UserBodyRequest(username, name);
-        given(mockUserService.createNewUser(username, name)).willThrow(IllegalArgumentException.class);
+        String avatar = "https://avatar.io/default";
+        UserBodyRequest body = new UserBodyRequest(username, name, avatar);
+        given(mockUserService.createNewUser(username, name, avatar)).willThrow(IllegalArgumentException.class);
 
         // Act
         Exception expected = assertThrows(

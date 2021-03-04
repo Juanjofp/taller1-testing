@@ -37,9 +37,9 @@ public class ToDoServiceUnitTests {
     @Test
     void addUserSkipUsersAlreadyAssociated() throws Exception {
         // Arrange
-        User juanjo = new User("juanjo@centic", "juanjo Franco");
-        User joaquin = new User("joaquin@centic", "Joaquin Lasheras");
-        User alicia = new User("alicia@centic", "Alicia Garcia");
+        User juanjo = new User("juanjo@centic", "juanjo Franco", "https://avatar.io/default");
+        User joaquin = new User("joaquin@centic", "Joaquin Lasheras", "https://avatar.io/default");
+        User alicia = new User("alicia@centic", "Alicia Garcia", "https://avatar.io/default");
         List<User> usersInToDo = Arrays.asList(juanjo, joaquin);
         List<String> usersToAsociate = Arrays.asList("juanjo@centic", "alicia@centic");
         ToDoList list = Mockito.mock(ToDoList.class);
@@ -65,9 +65,9 @@ public class ToDoServiceUnitTests {
     @Test
     void addUserSkipInvalidUsersAndAssociateValidOnes() throws Exception {
         // Arrange
-        User juanjo = new User("juanjo@centic", "juanjo Franco");
-        User joaquin = new User("joaquin@centic", "Joaquin Lasheras");
-        User alicia = new User("alicia@centic", "Alicia Garcia");
+        User juanjo = new User("juanjo@centic", "juanjo Franco", "https://avatar.io/default");
+        User joaquin = new User("joaquin@centic", "Joaquin Lasheras", "https://avatar.io/default");
+        User alicia = new User("alicia@centic", "Alicia Garcia", "https://avatar.io/default");
         List<User> usersInToDo = Arrays.asList(juanjo, joaquin);
         List<String> usersToAsociate = Arrays.asList("juanjo@centic", "alicia@centic", "pedro@arques");
         ToDoList list = Mockito.mock(ToDoList.class);

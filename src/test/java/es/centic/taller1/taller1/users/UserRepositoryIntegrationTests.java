@@ -22,7 +22,7 @@ public class UserRepositoryIntegrationTests {
     @Test
     void createANewUser() throws Exception {
         // Arrange
-        User user = new User("juanjo@centic", "Juanjo");
+        User user = new User("juanjo@centic", "Juanjo", "https://avatar.io/default");
 
         // ACT
         User expected = userRepository.save(user);
@@ -34,7 +34,7 @@ public class UserRepositoryIntegrationTests {
     @Test
     void createANewUserWithoutName() throws Exception {
         // Arrange
-        User user = new User("Juanjo", null);
+        User user = new User("Juanjo", null, "https://avatar.io/default");
 
         // ACT
         User expected = userRepository.save(user);
@@ -48,10 +48,10 @@ public class UserRepositoryIntegrationTests {
     @Test
     void retriveAllUsers() throws Exception {
         // Arrange
-        User one = userRepository.save(new User("juanjo@centic", "Juanjo"));
-        User two = userRepository.save(new User("joaquin@centic", "Joaquin"));
-        User three = userRepository.save(new User("alicia@centic", "Alicia"));
-        User four = userRepository.save(new User("pedro@centic", "Pedro"));
+        User one = userRepository.save(new User("juanjo@centic", "Juanjo", "https://avatar.io/default"));
+        User two = userRepository.save(new User("joaquin@centic", "Joaquin", "https://avatar.io/default"));
+        User three = userRepository.save(new User("alicia@centic", "Alicia", "https://avatar.io/default"));
+        User four = userRepository.save(new User("pedro@centic", "Pedro", "https://avatar.io/default"));
 
         // ACT
         Iterable<User> users = userRepository.findAll();

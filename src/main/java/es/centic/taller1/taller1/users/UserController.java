@@ -41,7 +41,8 @@ public class UserController {
             InternetAddress email = new InternetAddress(username);
             email.validate();
             String name = userBody.getName();
-            User newUser = userService.createNewUser(username, name);
+            String avatar = userBody.getAvatar();
+            User newUser = userService.createNewUser(username, name, avatar);
             return new UserBodyResponse(newUser);
         }
         catch(UserExistsException userExistsException) {

@@ -170,8 +170,8 @@ public class ToDoControllerIntegrationTests {
         // Arrange
         ToDoList list = todoListRepository.save(new ToDoList("First List"));
         ToDo todo = todoRepository.save(new ToDo(list, "First ToDo"));
-        User userOne = userRepository.save(new User("juanjo@centic", "Juanjo Franco"));
-        User userTwo = userRepository.save(new User("joaquin@centic", "Joaquin Lasheras"));
+        User userOne = userRepository.save(new User("juanjo@centic", "Juanjo Franco", "https://avatar.io/default"));
+        User userTwo = userRepository.save(new User("joaquin@centic", "Joaquin Lasheras", "https://avatar.io/default"));
         ArrayList<String> usersExpected = new ArrayList<>();
         usersExpected.add(userOne.getUsername());
         usersExpected.add(userTwo.getUsername());
@@ -203,8 +203,8 @@ public class ToDoControllerIntegrationTests {
     @Test
     void fails404WhenNoToDoPresent() throws Exception {
         // Arrange
-        User userOne = userRepository.save(new User("juanjo@centic", "Juanjo Franco"));
-        User userTwo = userRepository.save(new User("joaquin@centic", "Joaquin Lasheras"));
+        User userOne = userRepository.save(new User("juanjo@centic", "Juanjo Franco", "https://avatar.io/default"));
+        User userTwo = userRepository.save(new User("joaquin@centic", "Joaquin Lasheras", "https://avatar.io/default"));
         ArrayList<String> usersExpected = new ArrayList<>();
         usersExpected.add(userOne.getUsername());
         usersExpected.add(userTwo.getUsername());
